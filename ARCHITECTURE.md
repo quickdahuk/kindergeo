@@ -88,6 +88,7 @@ These choices are deliberate. Keep them unless you mean to change the game.
 | `tools/build_firebase.py` | Copies the site into `firebase/public/`, ready to deploy. |
 | `tests/unit.html`, `tests/unit.js` | Unit tests that run in the browser. |
 | `firebase/` | Only what Firebase Hosting needs: `firebase.json`, and `public/`, a copy of the site. |
+| `docs/` | The project page on GitHub Pages (<https://quickdahuk.github.io/kindergeo/>): the story, screenshots and links. Not part of the game. |
 
 Words used in the code:
 

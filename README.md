@@ -6,6 +6,19 @@ phones, tablets and computers.
 
 **Play it:** <https://kindergeo.com> (also <https://playkindermap.web.app>)
 
+**About it:** <https://quickdahuk.github.io/kindergeo/> (the story and screenshots)
+
+![Kinder Geo on a computer: the player found Sweden, shown in green with confetti and 100 points](docs/images/quiz-right.jpg)
+
+## How it started
+
+Kinder Geo is a vibe-coded app I made for my kid. It started with a globe:
+my kid would bring it to me and ask me to call out a country, so he could find
+it. Then he came up with the idea of points. I turned that whole
+back-and-forth into this game, together with him. Later, his friends and
+cousins asked for other countries too, which grew the game to the states,
+provinces and districts of eight countries (the Start menu's second page).
+
 | | |
 |---|---|
 | What it is | A static web page: HTML, CSS and plain JavaScript modules. No build step, no framework, no server code, no accounts. |
@@ -14,6 +27,7 @@ phones, tablets and computers.
 | Hosting | Firebase Hosting, project `playkindermap` |
 | Domain | `kindergeo.com`, registered with Squarespace, pointed at Firebase |
 | Code | <https://github.com/quickdahuk/kindergeo> |
+| Project page | <https://quickdahuk.github.io/kindergeo/>, on GitHub Pages from `docs/` |
 | How the code works | [ARCHITECTURE.md](ARCHITECTURE.md) |
 | Licence | [MIT](LICENSE) (bundled map data, map engine and font keep their own; see the end) |
 | Notes for AI agents | [AGENTS.md](AGENTS.md) |
@@ -95,6 +109,7 @@ tools/                data builds, local server, automated checks, Firebase copy
 tests/                unit tests (tests/unit.html, opened through the server)
 firebase/             Firebase Hosting settings (firebase.json, .firebaserc); public/ is a generated copy, not in git
 ARCHITECTURE.md       how it all works, the design rules, and how to change things safely
+docs/                 the project page on GitHub Pages: docs/index.html, screenshots in docs/images/
 AGENTS.md, CLAUDE.md  short working notes for AI coding agents
 LICENSE               MIT licence for the code
 ```
@@ -179,6 +194,14 @@ upload `index.html`, `manifest.webmanifest`, `css/`, `js/`, `data/`,
 `vendor/` and `assets/`. The server must send `.js`/`.mjs` as JavaScript,
 should compress text, and should send `Cache-Control: no-cache`. See
 [ARCHITECTURE.md → Deploying](ARCHITECTURE.md#deploying).
+
+**The project page** (<https://quickdahuk.github.io/kindergeo/>) is GitHub
+Pages, built from the `docs/` folder of the `main` branch: push a change to
+`docs/` and it goes live within a minute or two. It's a single
+`docs/index.html` with its own copy of the font, and screenshots in
+`docs/images/` taken from the live game with Playwright (1280 × 800 for
+desktop, 390 × 844 at 2× for phones, JPEG). It isn't part of the game's
+Firebase deploy. When the game's look changes, retake the screenshots.
 
 **Claude artifact version.** `python3 tools/build_artifact.py` builds a
 version for publishing as a Claude artifact into `.cache/artifact/` (it loads

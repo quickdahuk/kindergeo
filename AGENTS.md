@@ -13,6 +13,9 @@ rules, and how to make common changes).
   that it loads nothing from elsewhere.
 - **Edit the files at the repository root.** `firebase/public/` is a copy
   made by `tools/build_firebase.py`; never edit or commit it.
+- **`docs/` is the project page** on GitHub Pages
+  (<https://quickdahuk.github.io/kindergeo/>), not the game. It goes live when
+  `main` is pushed. Keep its words and screenshots in step with the game.
 - **Don't commit** `.cache/`, `.venv/`, `test-results/` or `firebase/public/`
   (`.gitignore` covers them).
 - **Keep the old internal name.** `window.countryQuest` and the `cq.` keys in

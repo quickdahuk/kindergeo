@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="sea" cx="38%" cy="32%" r="75%">
+      <stop offset="0" stop-color="#9adcff"/>
+      <stop offset="1" stop-color="#3594dc"/>
+    </radialGradient>
+    <clipPath id="globe"><circle cx="62" cy="68" r="48"/></clipPath>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="#141a4f"/>
+  <circle cx="62" cy="68" r="48" fill="url(#sea)"/>
+  <g clip-path="url(#globe)">
+    <path d="M14 56c10-14 26-19 37-13 8 4 4 13 12 17 9 4 4 15-6 17-11 2-13 13-25 11C20 86 8 70 14 56z" fill="#ffb74d"/>
+    <path d="M70 32c12-4 28 2 34 13 4 8-6 10-12 8-8-3-13 4-19 0-8-5-13-17-3-21z" fill="#aedc6e"/>
+    <path d="M74 82c8-6 21-4 25 6 4 9-4 21-13 23-10 2-19-8-17-15 1-6-1-10 5-14z" fill="#ff8a80"/>
+    <path d="M40 100c6-3 14-1 16 5 1 5-6 9-12 8-6-1-9-10-4-13z" fill="#b79cf2"/>
+  </g>
+  <ellipse cx="42" cy="44" rx="13" ry="7" fill="#fff" opacity=".35" transform="rotate(-32 42 44)"/>
+  <path d="M95 12c-10 0-17 7.5-17 17 0 12.5 17 27 17 27s17-14.5 17-27c0-9.5-7-17-17-17z" fill="#6c4cf5" stroke="#fff" stroke-width="4"/>
+  <circle cx="95" cy="29" r="6.5" fill="#ffc83d"/>
+</svg>

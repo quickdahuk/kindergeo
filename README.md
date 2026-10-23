@@ -15,6 +15,7 @@ phones, tablets and computers.
 | Domain | `kindergeo.com`, registered with Squarespace, pointed at Firebase |
 | Code | <https://github.com/quickdahuk/kindergeo> |
 | How the code works | [ARCHITECTURE.md](ARCHITECTURE.md) |
+| Licence | [MIT](LICENSE) (bundled map data, map engine and font keep their own; see the end) |
 | Notes for AI agents | [AGENTS.md](AGENTS.md) |
 
 The game was first called **Country Quest**. Players only see "Kinder Geo",
@@ -95,6 +96,7 @@ tests/                unit tests (tests/unit.html, opened through the server)
 firebase/             Firebase Hosting settings (firebase.json, .firebaserc); public/ is a generated copy, not in git
 ARCHITECTURE.md       how it all works, the design rules, and how to change things safely
 AGENTS.md, CLAUDE.md  short working notes for AI coding agents
+LICENSE               MIT licence for the code
 ```
 
 ## The map data
@@ -248,8 +250,6 @@ As of October 2026:
     now).
   - Province cards have no capital or fun fact yet (Bangladesh's districts
     show their population).
-  - No licence has been chosen for the code yet (MIT is the suggestion in
-    ARCHITECTURE.md).
   - Known gaps: flag emoji don't show on Windows, English only, no offline
     play. Disputed borders follow one point of view (see ARCHITECTURE.md).
 
@@ -260,7 +260,10 @@ sites. Settings and best scores stay in the browser's `localStorage`. The
 "Learn more" links open Wikipedia only when tapped. Keep it this way: schools
 look for it.
 
-## Credits
+## Licence and credits
+
+The code is under the [MIT licence](LICENSE). The parts it bundles keep their
+own licences:
 
 - Map data: [Natural Earth](https://www.naturalearthdata.com/) (public domain)
 - Districts of Bangladesh: Bangladesh Bureau of Statistics and OCHA ROAP, via

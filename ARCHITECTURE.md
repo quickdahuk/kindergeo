@@ -819,10 +819,11 @@ month, unless the project is on the pay-as-you-go plan ($0.15 per GB above
   <https://kindergeo.com>. Firebase serves the files from servers around the
   world, and keeps no visitor logs in the project unless they are turned on.
   `www.kindergeo.com` isn't set up yet.
-- **License** isn't chosen yet; MIT is the suggestion. It fits the parts the
-  game uses: MapLibre (BSD-3-Clause), Fredoka (SIL OFL), Natural Earth (public
-  domain), and geoBoundaries' districts of Bangladesh (CC BY 3.0 IGO, which
-  asks for credit: it is in the README, not yet in the game).
+- **License:** MIT ([LICENSE](LICENSE)). The parts the game bundles keep
+  their own: MapLibre (BSD-3-Clause), Fredoka (SIL OFL), Natural Earth (public
+  domain), and geoBoundaries' districts of Bangladesh in `data/provinces.json`
+  (CC BY 3.0 IGO, which asks for credit: it is in the README, not yet in the
+  game).
 - **Privacy** (in the README too): no accounts, cookies, analytics or ads;
   nothing loaded from other sites; settings stay on the device. Schools look
   for this. Keep it true: no outside scripts, fonts or analytics.

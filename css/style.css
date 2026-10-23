@@ -1,0 +1,1557 @@
+@font-face {
+  font-family: 'Fredoka';
+  src: url('../assets/fonts/fredoka-latin.woff2') format('woff2');
+  font-weight: 300 700;
+  font-display: swap;
+}
+
+:root {
+  --ink: #1d2150;
+  --ink-soft: #5b6090;
+  --card: rgba(255, 255, 255, 0.96);
+  --line: #e4e6f6;
+  --primary: #6c4cf5;
+  --primary-dark: #4b2fd1;
+  --primary-soft: #f0ebff;
+  --sun: #ffc83d;
+  --good: #22c55e;
+  --near: #fb923c;
+  --same: #facc15;
+  --bad: #f05252;
+  --radius: 22px;
+  --shadow: 0 10px 28px rgba(12, 18, 70, 0.28);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --space: #0a1036;
+  --font: 'Fredoka', ui-rounded, 'SF Pro Rounded', 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  /* Floating panels keep 16px from the sides; the vertical gap varies. */
+  --gap-x: 16px;
+  --gap-y: 10px;
+  /* Heights of the map buttons and of the Start button. */
+  --tool: 40px;
+  --pill: 50px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--space);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  touch-action: manipulation;
+}
+
+:focus-visible {
+  outline: 3px solid var(--sun);
+  outline-offset: 3px;
+}
+
+/* ---------- Map: a starry sky around the globe ---------- */
+
+.map {
+  position: fixed;
+  inset: 0;
+  background-color: #0b1240;
+  background-image:
+    radial-gradient(1.6px 1.6px at 23px 41px, #fff 50%, transparent 52%),
+    radial-gradient(1.2px 1.2px at 141px 97px, rgba(255, 255, 255, 0.85) 50%, transparent 52%),
+    radial-gradient(1.8px 1.8px at 77px 163px, rgba(255, 255, 255, 0.9) 50%, transparent 52%),
+    radial-gradient(1px 1px at 201px 23px, rgba(255, 255, 255, 0.7) 50%, transparent 52%),
+    radial-gradient(1.3px 1.3px at 251px 211px, rgba(255, 236, 170, 0.9) 50%, transparent 52%),
+    radial-gradient(1px 1px at 173px 251px, rgba(255, 255, 255, 0.6) 50%, transparent 52%),
+    radial-gradient(ellipse at 50% 45%, #2b3aa6 0%, #16206a 42%, #080d33 100%);
+  background-size: 190px 190px, 230px 230px, 270px 270px, 310px 310px, 290px 290px, 330px 330px, 100% 100%;
+}
+
+.maplibregl-canvas:focus-visible {
+  outline: none;
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.1;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s;
+}
+
+.btn--primary {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 5px 0 var(--primary-dark);
+}
+
+.btn--primary:hover {
+  background: #7a5cff;
+}
+
+.btn--primary:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 var(--primary-dark);
+}
+
+.btn--ghost {
+  background: #eef0fb;
+  color: var(--ink);
+}
+
+.btn--ghost:hover {
+  background: #e3e6f8;
+}
+
+.btn--ghost:active {
+  transform: translateY(2px);
+}
+
+.btn--big {
+  font-size: 21px;
+  padding: 15px 26px;
+}
+
+.btn--pulse {
+  animation: nudge 1.8s ease-in-out infinite;
+}
+
+.round-btn {
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+.round-btn:active {
+  transform: scale(0.94);
+}
+
+.round-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* The Start button, at the top of the exploring globe: opens the Start menu. */
+.start-pill {
+  position: fixed;
+  z-index: 10;
+  left: 50%;
+  top: calc(var(--gap-y) + var(--safe-top));
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--pill);
+  padding: 0 24px 0 17px;
+  border: none;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--primary-dark), var(--shadow);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s;
+}
+
+.start-pill:hover {
+  background: #7a5cff;
+}
+
+.start-pill:active {
+  transform: translate(-50%, 3px);
+  box-shadow: 0 1px 0 var(--primary-dark), var(--shadow);
+}
+
+.start-pill svg {
+  width: 22px;
+  height: 22px;
+}
+
+.score__star {
+  width: 24px;
+  height: 24px;
+  flex: none;
+}
+
+/* ---------- Top bar: what to find, progress, score ---------- */
+
+.hud {
+  position: fixed;
+  z-index: 10;
+  top: calc(var(--gap-y) + var(--safe-top));
+  left: calc(var(--gap-x) + var(--safe-left));
+  right: calc(var(--gap-x) + var(--safe-right));
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.hud > * {
+  pointer-events: auto;
+}
+
+/* Pinching on the game's buttons and cards must not zoom the page... */
+.hud,
+.map-tools,
+.start-pill,
+.toast {
+  touch-action: none;
+}
+
+/* ...but a long country card can still be scrolled. */
+.panel {
+  touch-action: pan-y;
+}
+
+.screen {
+  touch-action: pan-y;
+}
+
+.quest {
+  flex: 0 1 470px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 7px 16px 10px;
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.quest__top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.quest__country {
+  font-size: clamp(22px, 5.6vw, 34px);
+  font-weight: 700;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.quest__country .flag {
+  margin-right: 0.25em;
+}
+
+.progress {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pip {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #dfe2f3;
+}
+
+.pip--current {
+  background: var(--primary);
+  box-shadow: 0 0 0 3px rgba(108, 76, 245, 0.25);
+}
+
+.pip--exact { background: var(--good); }
+.pip--neighbor { background: var(--near); }
+.pip--continent { background: var(--same); }
+.pip--miss { background: var(--bad); }
+
+.score {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 78px;
+  height: 50px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--sun);
+  color: #4a3300;
+  font-size: 21px;
+  font-weight: 700;
+  box-shadow: var(--shadow);
+  font-variant-numeric: tabular-nums;
+}
+
+.score--bump {
+  animation: bump 0.5s ease;
+}
+
+/* ---------- Zoom buttons ---------- */
+
+.map-tools {
+  position: fixed;
+  z-index: 10;
+  right: calc(var(--gap-x) + var(--safe-right));
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Small and see-through, so they hide as little of the Earth as they can. */
+.map-tools .round-btn {
+  width: var(--tool);
+  height: var(--tool);
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  background: rgba(10, 16, 56, 0.32);
+  color: #fff;
+  box-shadow: none;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  transition: background-color 0.15s;
+}
+
+.map-tools .round-btn:hover {
+  background: rgba(10, 16, 56, 0.55);
+}
+
+.map-tools .round-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ---------- Bottom panel ---------- */
+
+.panel {
+  position: fixed;
+  z-index: 10;
+  left: calc(var(--gap-x) + var(--safe-left));
+  right: calc(var(--gap-x) + var(--safe-right));
+  bottom: calc(var(--gap-y) + var(--safe-bottom));
+  max-width: 560px;
+  /* A long country card scrolls rather than run off the top of the screen. */
+  max-height: calc(100% - 96px - var(--safe-top) - var(--safe-bottom));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin: 0 auto;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  animation: rise 0.3s ease;
+}
+
+.panel__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.panel__row .btn--big {
+  flex: 1;
+}
+
+.panel__hint {
+  flex: 1;
+  margin: 0 0 0 4px;
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.panel__small {
+  margin: 10px 0 0;
+  text-align: center;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+/* Explore mode's country card reaches up to just below the Start button. */
+.panel--card {
+  max-height: calc(100% - 3 * var(--gap-y) - var(--pill) - 4px - var(--safe-top) - var(--safe-bottom));
+}
+
+.panel > .btn--big {
+  width: 100%;
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 2px 2px 12px;
+}
+
+.result__emoji {
+  font-size: 42px;
+  line-height: 1;
+  animation: pop 0.5s ease;
+}
+
+.result__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.result__title {
+  font-size: 23px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.result__msg {
+  font-size: 16px;
+  line-height: 1.3;
+  color: var(--ink-soft);
+}
+
+.result__msg b {
+  color: var(--ink);
+}
+
+.result__points {
+  padding: 6px 12px;
+  border-radius: 14px;
+  background: #eceef8;
+  color: var(--ink-soft);
+  font-size: 22px;
+  font-weight: 700;
+  animation: pop 0.5s 0.1s ease both;
+}
+
+.result--exact .result__points { background: var(--good); color: #fff; }
+.result--neighbor .result__points { background: var(--near); color: #fff; }
+.result--continent .result__points { background: var(--same); color: #4a3300; }
+
+.muted {
+  opacity: 0.75;
+  font-weight: 500;
+}
+
+/* ---------- Explore mode: names switch and the country card ---------- */
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 14px 4px 4px;
+  border: none;
+  border-radius: 999px;
+  background: #eef0fb;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.toggle__track {
+  position: relative;
+  flex: none;
+  width: 42px;
+  height: 26px;
+  border-radius: 999px;
+  background: #c3c7e0;
+  transition: background-color 0.2s;
+}
+
+.toggle__knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(12, 18, 70, 0.3);
+  transition: transform 0.2s;
+}
+
+.toggle[aria-checked='true'] .toggle__track {
+  background: var(--good);
+}
+
+.toggle[aria-checked='true'] .toggle__knob {
+  transform: translateX(16px);
+}
+
+.info__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.info__flag {
+  font-size: 42px;
+  line-height: 1;
+}
+
+/* A US state's two-letter code, where a country shows its flag. */
+.info__badge {
+  flex: none;
+  display: grid;
+  place-items: center;
+  min-width: 52px;
+  height: 40px;
+  padding: 0 8px;
+  border-radius: 10px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  box-shadow: 0 3px 0 var(--primary-dark);
+}
+
+.info__titles {
+  flex: 1;
+  min-width: 0;
+}
+
+.info__name {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.info__facts {
+  margin: 2px 0 0;
+  font-size: 15.5px;
+  line-height: 1.3;
+  color: var(--ink-soft);
+}
+
+.info__close {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: #eef0fb;
+  cursor: pointer;
+}
+
+.info__close svg {
+  width: 20px;
+  height: 20px;
+}
+
+.info__details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px 16px;
+  margin: 10px 0 0;
+}
+
+.info__detail dt {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.info__detail dd {
+  margin: 1px 0 0;
+  font-size: 16.5px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.info__fact {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 9px 12px;
+  border-radius: 16px;
+  background: #fff4cc;
+  color: #4a3a12;
+  font-size: 15.5px;
+  line-height: 1.35;
+}
+
+.info__fact b {
+  color: #8a5a00;
+}
+
+.info__more {
+  margin-left: 2px;
+  color: #8a5a00;
+  font-weight: 700;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.info__more:hover {
+  color: #5c3c00;
+}
+
+/* A place with no fun fact: just the link. */
+.info__link {
+  margin: 10px 0 0;
+  font-size: 15.5px;
+}
+
+.info__link .info__more {
+  margin-left: 0;
+  color: var(--primary-dark);
+}
+
+/* ---------- Name tags and the pulsing ring on the map ---------- */
+
+.tag-marker {
+  pointer-events: none;
+}
+
+.tag {
+  display: block;
+  position: relative;
+  font-family: var(--font);
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  animation: pop 0.35s ease both;
+}
+
+.tag::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  margin-left: -6px;
+  border: 6px solid transparent;
+  border-bottom: 0;
+  border-top-color: inherit;
+}
+
+.tag { border-top-color: #fff; }
+.tag--target { background: var(--good); border-top-color: var(--good); color: #fff; }
+.tag--neighbor { background: var(--near); border-top-color: var(--near); color: #fff; }
+.tag--continent { background: var(--same); border-top-color: var(--same); color: #4a3300; }
+.tag--miss { background: var(--bad); border-top-color: var(--bad); color: #fff; }
+
+.pulse {
+  width: 30px;
+  height: 30px;
+  pointer-events: none;
+}
+
+.pulse span {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  box-shadow: 0 0 0 3px var(--good);
+  animation: ring 1.8s ease-out infinite;
+}
+
+.pulse span + span {
+  animation-delay: 0.9s;
+}
+
+/* ---------- Start and end screens ---------- */
+
+.screen {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  padding: calc(16px + var(--safe-top)) calc(16px + var(--safe-right)) calc(16px + var(--safe-bottom)) calc(16px + var(--safe-left));
+  background: radial-gradient(ellipse at center, rgba(10, 16, 60, 0.15), rgba(5, 8, 35, 0.6));
+}
+
+.card {
+  position: relative;
+  width: min(560px, 100%);
+  padding: 22px;
+  border-radius: 28px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  animation: rise 0.35s ease;
+}
+
+.card__close {
+  position: absolute;
+  z-index: 1;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: #eef0fb;
+  cursor: pointer;
+}
+
+.card__close svg {
+  width: 20px;
+  height: 20px;
+}
+
+.start {
+  --pad-x: 18px;
+  padding: 18px var(--pad-x) 20px;
+  text-align: center;
+}
+
+/* Two pages in the same spot, one showing at a time (the taller sets the
+   height, so the menu doesn't jump when the page turns). */
+.start__pages {
+  position: relative;
+  display: grid;
+}
+
+/* The page turned to shows at once (so it can be tapped straight away) and
+   fades in; the other fades out, then hides. */
+.start__page {
+  grid-area: 1 / 1;
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s;
+}
+
+.start__page:not(.start__page--on) {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-14px);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s 0.25s;
+}
+
+.start__page--on ~ .start__page:not(.start__page--on) {
+  transform: translateY(14px);
+}
+
+.start__note {
+  margin: 14px 0 0;
+  font-size: 14.5px;
+  color: var(--ink-soft);
+}
+
+/* The page dots, one above the other in the card's right margin. */
+.start__dots {
+  position: absolute;
+  top: 50%;
+  right: calc(-1 * var(--pad-x));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: var(--pad-x);
+  transform: translateY(-50%);
+}
+
+.start__dot {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-width: 16px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.start__dot::before {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: #cfc8f7;
+  transition: height 0.2s ease, background-color 0.2s;
+}
+
+.start__dot:hover::before {
+  background: #a596f5;
+}
+
+.start__dot[aria-current='true']::before {
+  height: 20px;
+  background: var(--primary);
+}
+
+.start__dot:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: -2px;
+  border-radius: 8px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+  transform: none;
+}
+
+.start__title {
+  margin: 0;
+  padding: 0 44px; /* clear of the close button */
+  font-size: 26px;
+  line-height: 1.25;
+  color: var(--primary);
+}
+
+.start__heading {
+  margin: 12px 0 7px;
+  font-size: 16px;
+}
+
+.start__info {
+  min-height: 1.3em;
+  margin: 10px 0 8px;
+  font-size: 14.5px;
+  color: var(--ink-soft);
+}
+
+.start .btn--big {
+  width: 100%;
+}
+
+.start .btn--ghost {
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* Explore, with the names switch beside it. */
+.start__explore {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 10px;
+  margin-top: 10px;
+}
+
+.start .start__explore .btn--ghost {
+  flex: 1 1 120px;
+  width: auto;
+  margin-top: 0;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.chip:hover {
+  border-color: #c9c2fb;
+}
+
+.chip[aria-checked='true'] {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  color: var(--primary-dark);
+  font-weight: 600;
+  box-shadow: 0 3px 0 var(--primary);
+}
+
+.chip__emoji {
+  font-size: 20px;
+}
+
+/* Places: two rows of four tiles, an emoji over each name. */
+.chips--regions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.chip--region {
+  flex-direction: column;
+  gap: 3px;
+  padding: 7px 3px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.15;
+  overflow-wrap: anywhere; /* only if a name is too long for a very narrow phone */
+}
+
+.chip--region .chip__emoji {
+  font-size: 24px;
+  line-height: 1;
+}
+
+/* On narrow phones the countries go three to a row, so long names fit. */
+@media (max-width: 480px) {
+  .chips--countries {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .chips--countries .chip {
+    flex: 0 0 calc((100% - 16px) / 3);
+  }
+}
+
+.chips--levels {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.chip--level {
+  padding: 8px 4px;
+  border-radius: 16px;
+}
+
+.end {
+  text-align: center;
+}
+
+.end__emoji {
+  font-size: 60px;
+  line-height: 1;
+  animation: pop 0.6s ease;
+}
+
+.end__title {
+  margin: 6px 0 4px;
+  font-size: 32px;
+  color: var(--primary);
+}
+
+.stars {
+  font-size: 42px;
+  letter-spacing: 6px;
+  color: #dfe2f3;
+}
+
+.stars .on {
+  color: var(--sun);
+  text-shadow: 0 3px 0 #e0a400;
+}
+
+.end__score {
+  margin: 4px 0 0;
+  font-size: 20px;
+}
+
+.end__score b {
+  font-size: 30px;
+  color: var(--primary);
+}
+
+.end__best {
+  margin: 2px 0 12px;
+  color: var(--ink-soft);
+}
+
+/* The rounds grouped by their points: a badge, then the places as chips. */
+.recap {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.recap__group {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.recap__pts {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 74px;
+  height: 30px;
+  border-radius: 999px;
+  background: #eceef8;
+  color: var(--ink-soft);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.recap__group--exact .recap__pts { background: var(--good); color: #fff; }
+.recap__group--neighbor .recap__pts { background: var(--near); color: #fff; }
+.recap__group--continent .recap__pts { background: var(--same); color: #4a3300; }
+
+.recap__names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.recap__name {
+  padding: 4px 11px;
+  border-radius: 15px;
+  background: #eef0fb;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.recap__group--exact .recap__name { background: #e1f6e8; }
+.recap__group--neighbor .recap__name { background: #ffecdb; }
+.recap__group--continent .recap__name { background: #fcf3cc; }
+
+.end__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* A card that would not fit (long names on a small screen): no big emoji,
+   and smaller chips. */
+.end--tight .end__emoji {
+  display: none;
+}
+
+.end--tight .recap {
+  gap: 5px;
+}
+
+.end--tight .recap__names {
+  gap: 3px;
+}
+
+.end--tight .recap__pts {
+  width: 58px;
+  height: 24px;
+  font-size: 13.5px;
+}
+
+.end--tight .recap__name {
+  padding: 1px 8px;
+  font-size: 13.5px;
+}
+
+/* Explore and Change game side by side. */
+.end__more {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.end__more .btn {
+  flex: 1 1 120px;
+}
+
+/* ---------- Loading, toast, confetti ---------- */
+
+.screen--loading {
+  background: transparent;
+  color: #fff;
+  text-align: center;
+  font-size: 18px;
+}
+
+.loading__globe {
+  font-size: 64px;
+  animation: float 1.6s ease-in-out infinite;
+}
+
+.loading__error {
+  margin: 0;
+  color: var(--ink);
+  font-size: 18px;
+  text-align: center;
+}
+
+.toast {
+  position: fixed;
+  z-index: 30;
+  left: 50%;
+  top: calc(130px + var(--safe-top));
+  max-width: calc(100% - 32px);
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(20, 26, 79, 0.92);
+  color: #fff;
+  font-size: 17px;
+  text-align: center;
+  opacity: 0;
+  transform: translate(-50%, -8px);
+  transition: opacity 0.25s, transform 0.25s;
+  pointer-events: none;
+}
+
+.toast--show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.noscript {
+  position: fixed;
+  inset: auto 16px 16px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #fff;
+  text-align: center;
+}
+
+/* ---------- Animations ---------- */
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes slide-in {
+  from { opacity: 0; transform: translateX(18px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes pop {
+  0% { transform: scale(0.4); opacity: 0; }
+  70% { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+@keyframes bump {
+  0%, 100% { transform: scale(1); }
+  40% { transform: scale(1.18); }
+}
+
+@keyframes nudge {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes ring {
+  from { transform: scale(0.5); opacity: 1; }
+  to { transform: scale(2.6); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Bigger screens ---------- */
+
+@media (min-width: 760px) {
+  :root {
+    --gap-y: 16px;
+  }
+
+  .quest {
+    padding: 8px 22px 12px;
+  }
+
+  .panel {
+    padding: 14px;
+  }
+
+  .result__msg {
+    font-size: 17px;
+  }
+
+  .card {
+    padding: 28px;
+  }
+
+  .start {
+    --pad-x: 26px;
+    padding: 22px var(--pad-x) 24px;
+  }
+}
+
+/* ---------- Wide screens held sideways: the country card sits at the right ---------- */
+
+@media (orientation: landscape) and (min-width: 900px) and (min-height: 501px) {
+  .panel--card {
+    top: calc(var(--gap-y) + var(--safe-top));
+    /* Just left of the zoom buttons. */
+    right: calc(var(--gap-x) + var(--tool) + 12px + var(--safe-right));
+    bottom: auto;
+    left: auto;
+    width: min(380px, 32vw);
+    max-height: calc(100% - 2 * var(--gap-y) - var(--safe-top) - var(--safe-bottom));
+    margin: 0;
+    animation: slide-in 0.3s ease;
+  }
+}
+
+/* ---------- Phones held upright: in Explore mode the map buttons sit at the
+   top right, so the country card at the bottom never covers them ---------- */
+
+@media (max-width: 649px) and (orientation: portrait) {
+  .exploring .map-tools {
+    top: calc(var(--gap-y) + var(--safe-top));
+    transform: none;
+  }
+
+  .exploring .panel--card {
+    max-height: calc(100% - 3 * var(--gap-y) - 3 * var(--tool) - 16px - var(--safe-top) - var(--safe-bottom));
+  }
+}
+
+/* ---------- Small phones ---------- */
+
+@media (max-width: 380px) {
+  :root {
+    --pill: 46px;
+  }
+
+  .round-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 21px;
+  }
+
+  .start-pill {
+    font-size: 18px;
+  }
+
+  .score {
+    min-width: 64px;
+    height: 44px;
+    padding: 0 10px;
+    font-size: 18px;
+  }
+
+  .quest {
+    padding: 6px 10px 8px;
+  }
+
+  .btn--big {
+    font-size: 19px;
+    padding: 13px 18px;
+  }
+
+  .panel__hint {
+    font-size: 16px;
+  }
+
+  .start {
+    --pad-x: 14px;
+    padding: 16px var(--pad-x) 18px;
+  }
+
+  .chip--region {
+    font-size: 13px;
+  }
+}
+
+/* ---------- Short screens: a smaller heading on the score card, so it fits
+   without scrolling ---------- */
+
+@media (max-height: 760px) {
+  .end__emoji {
+    font-size: 44px;
+  }
+
+  .end__title {
+    margin: 2px 0;
+    font-size: 27px;
+  }
+
+  .stars {
+    font-size: 34px;
+    line-height: 1.1;
+  }
+
+  .end__score {
+    font-size: 18px;
+  }
+
+  .end__score b {
+    font-size: 26px;
+  }
+
+  .end__best {
+    margin-bottom: 10px;
+  }
+}
+
+/* Narrow phones: more room for the places on the score card. */
+@media (max-width: 420px) {
+  .end {
+    padding: 18px 14px;
+  }
+
+  .recap__group {
+    gap: 6px;
+  }
+
+  .recap__pts {
+    width: 64px;
+    height: 28px;
+    font-size: 14.5px;
+  }
+
+  .recap__names {
+    gap: 4px;
+  }
+
+  .recap__name {
+    padding: 3px 9px;
+    font-size: 14.5px;
+  }
+}
+
+/* ---------- Phones on their side: keep the map visible ---------- */
+
+@media (max-height: 500px) and (orientation: landscape) {
+  :root {
+    --gap-y: 8px;
+    --pill: 44px;
+  }
+
+  .hud {
+    right: auto;
+    width: min(520px, 58vw);
+  }
+
+  .quest {
+    margin: 0;
+    padding: 4px 12px 6px;
+  }
+
+  .quest__country {
+    font-size: 22px;
+  }
+
+  .progress {
+    margin-top: 4px;
+  }
+
+  .panel {
+    left: auto;
+    right: calc(var(--gap-x) + var(--tool) + 12px + var(--safe-right));
+    width: min(400px, 46vw);
+    max-height: calc(100% - 2 * var(--gap-y) - var(--safe-top) - var(--safe-bottom));
+    margin: 0;
+    padding: 10px;
+  }
+
+  .panel--card {
+    max-height: calc(100% - 3 * var(--gap-y) - var(--pill) - 4px - var(--safe-top) - var(--safe-bottom));
+  }
+
+  .result {
+    margin-bottom: 8px;
+  }
+
+  .result__emoji {
+    font-size: 32px;
+  }
+
+  .result__title {
+    font-size: 19px;
+  }
+
+  .result__msg {
+    font-size: 14px;
+  }
+
+  .btn--big {
+    font-size: 18px;
+    padding: 11px 18px;
+  }
+
+  .round-btn {
+    width: 42px;
+    height: 42px;
+    font-size: 20px;
+  }
+
+  .start-pill {
+    font-size: 18px;
+  }
+
+  .map-tools {
+    gap: 6px;
+  }
+
+  .score {
+    position: fixed;
+    top: calc(var(--gap-y) + var(--safe-top));
+    right: calc(var(--gap-x) + var(--safe-right));
+    height: 42px;
+    font-size: 18px;
+  }
+
+  .screen {
+    place-items: start center;
+    padding-top: calc(8px + var(--safe-top));
+    padding-bottom: calc(8px + var(--safe-bottom));
+  }
+
+  /* Two columns, so everything fits without scrolling. */
+  .card {
+    width: min(860px, 100%);
+    padding: 16px 20px;
+  }
+
+  .start {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: 'title title' 'where play';
+    column-gap: 22px;
+    align-items: start;
+    padding: 12px 20px 16px;
+  }
+
+  .start__title {
+    grid-area: title;
+    font-size: 22px;
+  }
+
+  .start__where { grid-area: where; }
+  .start__play { grid-area: play; }
+
+  .card__close {
+    top: 8px;
+    right: 10px;
+  }
+
+  .start__heading {
+    margin: 6px 0;
+    font-size: 15px;
+  }
+
+  .chip {
+    padding: 5px 11px;
+    font-size: 14.5px;
+  }
+
+  .chip__emoji {
+    font-size: 17px;
+  }
+
+  .chip--region {
+    padding: 5px 3px;
+  }
+
+  .chip--region .chip__emoji {
+    font-size: 20px;
+  }
+
+  .chip--level {
+    padding: 6px 4px;
+  }
+
+  .start__info {
+    margin: 8px 0 6px;
+    font-size: 14px;
+  }
+
+  .end {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    grid-template-rows: 1fr auto;
+    grid-template-areas: 'summary recap' 'actions recap';
+    column-gap: 22px;
+    align-items: center;
+  }
+
+  .end__summary { grid-area: summary; }
+  .end__actions { grid-area: actions; }
+
+  .recap {
+    grid-area: recap;
+    margin: 0;
+  }
+
+  .end__emoji {
+    font-size: 40px;
+  }
+
+  .end__title {
+    font-size: 26px;
+  }
+
+  .stars {
+    font-size: 32px;
+  }
+
+  .toast {
+    top: calc(90px + var(--safe-top));
+  }
+}

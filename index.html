@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Kinder Geo</title>
+  <meta name="description" content="A geography game for kids: find countries on a colourful map with no names on it.">
+  <meta name="theme-color" content="#141a4f">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icon-180.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preload" href="assets/fonts/fredoka-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="data/world.json" as="fetch" crossorigin>
+  <link rel="stylesheet" href="vendor/maplibre-gl/maplibre-gl.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <div id="map" class="map" role="application" aria-label="World map. Tap a country."></div>
+
+  <header id="hud" class="hud" hidden>
+    <button id="menu-btn" class="round-btn" type="button" aria-label="Menu">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 7h15M4.5 12h15M4.5 17h15" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+    </button>
+    <div id="quest" class="quest" aria-live="polite">
+      <div class="quest__top"><span class="quest__label">Find</span><span id="round-label" class="quest__round"></span></div>
+      <div class="quest__country"><span id="quest-flag" class="flag"></span><span id="quest-name"></span></div>
+      <ol id="progress" class="progress" aria-label="Rounds"></ol>
+    </div>
+    <div id="score-box" class="score" aria-label="Score">
+      <svg class="score__star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5-4.7-4.6 6.5-.9z" fill="#fff" stroke="#d98f00" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <span id="score">0</span>
+    </div>
+  </header>
+
+  <div id="map-tools" class="map-tools" hidden>
+    <button id="zoom-in" class="round-btn" type="button" aria-label="Zoom in">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>
+    </button>
+    <button id="zoom-out" class="round-btn" type="button" aria-label="Zoom out">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>
+    </button>
+    <button id="zoom-home" class="round-btn" type="button" aria-label="Back to the start view">
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.6"/><path d="M3.6 12h16.8M12 3.4c2.5 2.6 3.5 5.5 3.5 8.6s-1 6-3.5 8.6M12 3.4C9.5 6 8.5 8.9 8.5 12s1 6 3.5 8.6"/></svg>
+    </button>
+  </div>
+
+  <button id="start-menu-btn" class="start-pill" type="button" aria-label="Start: play the quiz or change settings" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 5.8v12.4l9.8-6.2z" fill="currentColor" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>
+    <span>Start</span>
+  </button>
+
+  <section id="panel" class="panel" aria-live="polite" hidden></section>
+
+  <div id="start" class="screen" hidden>
+    <div class="card start" role="dialog" aria-modal="true" aria-labelledby="start-title">
+      <button id="menu-close" class="card__close" type="button" aria-label="Close the menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+      </button>
+      <h1 id="start-title" class="start__title"><span aria-hidden="true">🌍</span> Kinder Geo</h1>
+
+      <!-- Two pages: the world, continents and US states; and, behind the
+           second dot, a few countries to play inside. -->
+      <div class="start__pages">
+        <div class="start__page start__page--on" data-page="1">
+          <h2 class="start__heading">Where?</h2>
+          <div id="region-chips" class="chips chips--regions" role="radiogroup" aria-label="Region"></div>
+          <h2 class="start__heading">How tricky?</h2>
+          <div id="level-chips" class="chips chips--levels" role="radiogroup" aria-label="Level"></div>
+        </div>
+        <div class="start__page" data-page="2" aria-hidden="true" inert>
+          <h2 class="start__heading">Inside a country</h2>
+          <div id="country-chips" class="chips chips--regions chips--countries" role="radiogroup" aria-label="Country"></div>
+          <p class="start__note">Find its states, provinces or districts.</p>
+        </div>
+        <div id="start-dots" class="start__dots">
+          <button type="button" class="start__dot" data-page="1" aria-current="true"
+            aria-label="The world, continents and US States" title="The world"></button>
+          <button type="button" class="start__dot" data-page="2" aria-current="false"
+            aria-label="More: places inside a country" title="Inside a country"></button>
+        </div>
+      </div>
+
+      <div class="start__play">
+        <p class="start__info"><span id="round-info"></span><span id="best-info"></span></p>
+        <button id="start-btn" class="btn btn--primary btn--big" type="button">Let's go! ▶</button>
+        <button id="resume-btn" class="btn btn--ghost" type="button" hidden>Back to my game</button>
+        <div class="start__explore">
+          <button id="explore-btn" class="btn btn--ghost" type="button">🧭 Explore</button>
+          <button id="names-btn" class="toggle" type="button" role="switch" aria-checked="false">
+            <span class="toggle__track" aria-hidden="true"><span class="toggle__knob"></span></span>
+            <span>Show names</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="end" class="screen" hidden>
+    <div class="card end"></div>
+  </div>
+
+  <div id="loading" class="screen screen--loading">
+    <div class="loading">
+      <div class="loading__globe" aria-hidden="true">🌍</div>
+      <p>Loading the world…</p>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <canvas id="confetti" class="confetti" aria-hidden="true"></canvas>
+  <noscript><p class="noscript">Kinder Geo needs JavaScript to run.</p></noscript>
+</body>
+</html>

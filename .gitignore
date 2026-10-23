@@ -1,0 +1,29 @@
+# Downloads and local tooling: Natural Earth and geoBoundaries sources, mapshaper
+# work files, the Claude artifact build, Playwright browsers, test fonts.
+# All of it is made again by the tools when needed.
+.cache/
+
+# Python: virtualenv (the old one here was made on Linux) and bytecode
+.venv/
+__pycache__/
+*.pyc
+
+# Screenshots from tools/check.py
+test-results/
+
+# Firebase: the copy of the site made by tools/build_firebase.py, and the
+# CLI's cache and logs
+firebase/public/
+.firebase/
+firebase-debug*.log
+
+# Node (npx keeps its downloads elsewhere, but just in case)
+node_modules/
+
+# Logs, secrets, editors and OS files
+*.log
+.env
+.env.*
+.DS_Store
+.vscode/
+.idea/
